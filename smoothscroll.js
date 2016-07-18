@@ -60,7 +60,7 @@
   // if the first argument is numeric then scroll to this location
   // if the callback exist, it is called when the scrolling is finished
   // if context is set then scroll that element, else scroll window
-  var smoothScroll = function (el, duration, callback, context) {
+  return function (el, duration, callback, context) {
     duration = duration || 500;
     context = context || window;
     var start = window.pageYOffset;
@@ -97,35 +97,4 @@
     };
     step();
   };
-
-  var linkHandler = function (ev) {
-    ev.preventDefault();
-
-    if (location.hash !== this.hash) {
-      window.history.pushState(null, null, this.hash)
-    }
-    // using the history api to solve issue #1 - back doesn't work
-    // most browser don't update :target when the history api is used:
-    // THIS IS A BUG FROM THE BROWSERS.
-    // change the scrolling duration in this call
-    var node = document.getElementById(this.hash.substring(1))
-    if (!node) {
-      return;
-    } // Do not scroll to non-existing node
-
-    smoothScroll(node, 500, function (el) {
-      location.replace('#' + el.id);
-      // this will cause the :target to be activated.
-    });
-  };
-
-  // We look for all the internal links in the documents and attach the smoothscroll function
-  document.addEventListener("DOMContentLoaded", function () {
-    var internal = document.querySelectorAll('a[href^="#"]:not([href="#"])'), a;
-    for (var i = internal.length; a = internal[--i];) {
-      a.addEventListener("click", linkHandler, false);
-    }
-  });
-
-  return smoothScroll;
 });
