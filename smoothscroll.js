@@ -72,13 +72,7 @@
         var hash = el;
         var id = hash.substr(1);
         el = document.getElementById(id);
-        if (location.hash !== hash) {
-          // using the history api to solve issue #1 - back button doesn't work
-          // most browser don't update :target when the history api is used:
-          // THIS IS A BUG FROM THE BROWSERS.
-          window.history.pushState(null, null, hash)
-        }
-        location.replace(hash);
+        location.hash = hash;
       }
       end = getTop(el);
     }
