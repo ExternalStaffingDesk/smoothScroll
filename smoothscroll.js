@@ -74,6 +74,12 @@
         el = document.getElementById(id);
         var originalCallback = callback;
         callback = function (el) {
+          if (location.hash !== hash) {
+            // using the history api to solve issue #1 - back button doesn't work
+            // most browser don't update :target when the history api is used:
+            // THIS IS A BUG FROM THE BROWSERS.
+            window.history.pushState(null, null, hash)
+          }
           location.replace(hash);
           if (typeof originalCallback === 'function') {
             originalCallback(el);
