@@ -68,16 +68,17 @@
     if (typeof el === 'number') {
       end = parseInt(el);
     } else {
-      if (typeof el === 'string') { // shortcut for links to ids (e.g. the anchor for top in #top is an element with the ID "top")
-        var id = el;
+      if (typeof el === 'string' && el.substr(0, 1) === '#') { // shortcut for links to ids (e.g. the anchor for top in #top is an element with the ID "top")
+        var hash = el;
+        var id = hash.substr(1);
         el = document.getElementById(id);
         var originalCallback = callback;
         callback = function (el) {
-          if (location.hash !== this.hash) {
+          if (location.hash !== hash) {
             // using the history api to solve issue #1 - back button doesn't work
             // most browser don't update :target when the history api is used:
             // THIS IS A BUG FROM THE BROWSERS.
-            window.history.pushState(null, null, this.hash)
+            window.history.pushState(null, null, hash)
           }
           location.replace('#' + id);
           if (typeof originalCallback === 'function') {
