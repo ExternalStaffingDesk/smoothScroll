@@ -68,6 +68,12 @@
     if (typeof el === 'number') {
       end = parseInt(el);
     } else {
+      if (typeof el === 'string' && el.substr(0, 1) === '#') { // shortcut for links to ids (e.g. the anchor for top in #top is an element with the ID "top")
+        var hash = el;
+        var id = hash.substr(1);
+        el = document.getElementById(id);
+        location.hash = hash;
+      }
       end = getTop(el);
     }
 
@@ -82,8 +88,7 @@
       var elapsed = Date.now() - clock;
       if (context !== window) {
         context.scrollTop = position(start, end, elapsed, duration);
-      }
-      else {
+      } else {
         window.scroll(0, position(start, end, elapsed, duration));
       }
 
