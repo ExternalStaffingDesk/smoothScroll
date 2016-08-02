@@ -70,7 +70,7 @@
   // if the first argument is numeric then scroll to this location
   // if the callback exist, it is called when the scrolling is finished
   // if context is set then scroll that element, else scroll window
-  return function (el, duration, offset, callback, center) {
+  return function (el, duration, offset, callback, goToTop) {
     duration = duration || 500;
     var start = window.pageYOffset;
     var end;
@@ -83,7 +83,7 @@
         el = document.getElementById(id);
         location.hash = hash;
       }
-      end = center ? getTopWhenCentered(el, offset) : getTop(el);
+      end = goToTop ? getTop(el) : getTopWhenCentered(el, offset);
     }
     end = end - offset;
 
