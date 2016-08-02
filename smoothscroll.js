@@ -37,6 +37,16 @@
     }
     return element.getBoundingClientRect().top + window.pageYOffset;
   };
+  var getTopWhenCentered = function (element, offset) {
+    var viewportHeight = window.innerHeight;
+    var elementHeight = element.clientHeight;
+    var elementTop = getTop(element);
+    if (elementHeight >= viewportHeight) {
+      return elementTop;
+    }
+    return elementTop - (viewportHeight - elementHeight - offset) / 2;
+  };
+
   // ease in out function thanks to:
   // http://blog.greweb.fr/2012/02/bezier-curve-based-easing-functions-from-concept-to-implementation/
   var easeInOutCubic = function (t) {
@@ -60,9 +70,8 @@
   // if the first argument is numeric then scroll to this location
   // if the callback exist, it is called when the scrolling is finished
   // if context is set then scroll that element, else scroll window
-  return function (el, duration, callback, context) {
+  return function (el, duration, offset, callback, center) {
     duration = duration || 500;
-    context = context || window;
     var start = window.pageYOffset;
     var end;
     if (typeof el === 'number') {
@@ -74,8 +83,9 @@
         el = document.getElementById(id);
         location.hash = hash;
       }
-      end = getTop(el);
+      end = center ? getTopWhenCentered(el, offset) : getTop(el);
     }
+    end = end - offset;
 
     var clock = Date.now();
     var requestAnimationFrame = window.requestAnimationFrame ||
@@ -86,11 +96,7 @@
 
     var step = function () {
       var elapsed = Date.now() - clock;
-      if (context !== window) {
-        context.scrollTop = position(start, end, elapsed, duration);
-      } else {
-        window.scroll(0, position(start, end, elapsed, duration));
-      }
+      window.scroll(0, position(start, end, elapsed, duration));
 
       if (elapsed > duration) {
         if (typeof callback === 'function') {
