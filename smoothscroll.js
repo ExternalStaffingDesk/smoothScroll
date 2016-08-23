@@ -79,9 +79,13 @@
   // if the first argument is numeric then scroll to this location
   // if the callback exist, it is called when the scrolling is finished
   // if context is set then scroll that element, else scroll window
-  return function (el, duration, offset, callback, goToTop, container) {
-    duration = duration || 500;
-    container = container || window;
+  return function (el, duration, options) {
+    duration = typeof duration === 'number' ? duration : 500;
+    var offset = options.offset;
+    var callback = options.callback;
+    var goToTop = options.goToTop;
+    var container = options.container || window;
+
     var start = container === window ? window.pageYOffset : container.scrollTop;
     var end;
     if (typeof el === 'number') {
