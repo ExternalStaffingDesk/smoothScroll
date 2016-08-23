@@ -31,6 +31,9 @@
   var getViewportHeight = function (container) {
     return container === window ? window.innerHeight : container.offsetHeight;
   };
+  var getCurrentScrollPosition = function (container) {
+    return container === window ? window.pageYOffset : container.scrollTop;
+  };
   // Get the top position of an element in the container
   var getTop = function (container, element) {
     if (container === window) {
@@ -54,6 +57,13 @@
       return elementTop;
     }
     return elementTop - (viewportHeight - elementHeight - offset) / 2;
+  };
+
+  var isWithinViewport = function (container, element) {
+    var top = getTop(container, element);
+    var viewportHeight = getViewportHeight(container);
+
+    return
   };
 
   // ease in out function thanks to:
@@ -82,15 +92,16 @@
   return function (el, duration, options) {
     duration = typeof duration === 'number' ? duration : 500;
     options = options || {};
-    var offset = options.offset;
+    var offset = options.offset || 0;
     var callback = options.callback;
-    var goToTop = options.goToTop;
+    var goToTop = options.goToTop || false;
     var container = options.container || window;
+    var onlyIfNeeded = options.onlyIfNeeded || false;
 
-    var start = container === window ? window.pageYOffset : container.scrollTop;
-    var end;
+    var scrollTopStart = getCurrentScrollPosition(container);
+    var scrollTopTarget;
     if (typeof el === 'number') {
-      end = parseInt(el);
+      scrollTopTarget = parseInt(el);
     } else {
       if (typeof el === 'string' && el.substr(0, 1) === '#') { // shortcut for links to ids (e.g. the anchor for top in #top is an element with the ID "top")
         var hash = el;
@@ -98,9 +109,17 @@
         el = document.getElementById(id);
         location.hash = hash;
       }
-      end = goToTop ? getTop(container, el) : getTopWhenCentered(container, el, offset);
+      scrollTopTarget = goToTop ? getTop(container, el) : getTopWhenCentered(container, el, offset);
     }
-    end = end - offset;
+    scrollTopTarget = scrollTopTarget - offset; // apply offset prior to checking if it's within viewport as the offset usually is some area that is not visible
+
+    if (onlyIfNeeded) {
+      var viewportHeight = getViewportHeight(container);
+      var withinViewport = scrollTopStart < scrollTopTarget && (scrollTopStart + viewportHeight) > scrollTopTarget;
+      if (withinViewport) {
+        return;
+      }
+    }
 
     var clock = Date.now();
     var requestAnimationFrame = window.requestAnimationFrame ||
@@ -119,7 +138,7 @@
 
     var step = function () {
       var elapsed = Date.now() - clock;
-      var newScrollTop = position(start, end, elapsed, duration);
+      var newScrollTop = position(scrollTopStart, scrollTopTarget, elapsed, duration);
       scrollTo(newScrollTop);
 
       if (elapsed > duration) {
