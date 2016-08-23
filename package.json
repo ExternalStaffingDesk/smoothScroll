@@ -1,12 +1,12 @@
 {
   "name": "smoothscroll",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A teeny tiny smooth scroll script with ease-in-out effect and no jQuery.",
   "main": "smoothscroll.js",
-  "author": "Alice Lieutier <alice@lieutier.me> (http://alice.lieutier.me)",
+  "author": "Original by Alice Lieutier <alice@lieutier.me> (http://alice.lieutier.me), heavily modified by External Staffing Desk B.V.",
   "license": "MIT",
-  "homepage": "https://github.com/alicelieutier/smoothScroll#readme",
-  "repository": "https://github.com/alicelieutier/smoothScroll.git",
+  "homepage": "https://github.com/ExternalStaffingDesk/smoothScrollz#readme",
+  "repository": "https://github.com/ExternalStaffingDesk/smoothScroll.git",
   "keywords": [ "smooth scroll", "scroll", "no jQuery", "anchor" ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
