@@ -11,7 +11,6 @@
     // CommonJS
   } else if (typeof exports === 'object' && typeof module === 'object') {
     module.exports = smoothScroll();
-
   } else {
     root.smoothScroll = smoothScroll();
   }
@@ -25,23 +24,33 @@
 
   // We do not want this script to be applied in browsers that do not support those
   // That means no smoothscroll on IE9 and below.
-  if (document.querySelectorAll === void 0 || window.pageYOffset === void 0 || history.pushState === void 0) {
+  if (document.querySelectorAll === void 0 || window.pageYOffset === void 0) {
     return;
   }
 
-  // Get the top position of an element in the document
-  var getTop = function (element) {
-    // return value of html.getBoundingClientRect().top ... IE : 0, other browsers : -pageYOffset
-    if (element.nodeName === 'HTML') {
-      return -window.pageYOffset
-    }
-    return element.getBoundingClientRect().top + window.pageYOffset;
+  var getViewportHeight = function (container) {
+    return container === window ? window.innerHeight : container.offsetHeight;
   };
-  var getTopWhenCentered = function (element, offset) {
-    var viewportHeight = window.innerHeight;
+  // Get the top position of an element in the container
+  var getTop = function (container, element) {
+    if (container === window) {
+      return element.getBoundingClientRect().top + window.pageYOffset;
+    }
+
+    // Get top relative to container
+    var top = 0;
+    var aContainerChild = element;
+    while (aContainerChild && aContainerChild !== container) {
+      top += aContainerChild.offsetTop;
+      aContainerChild = aContainerChild.offsetParent;
+    }
+    return top;
+  };
+  var getTopWhenCentered = function (container, element, offset) {
+    var viewportHeight = getViewportHeight();
     var elementHeight = element.clientHeight;
-    var elementTop = getTop(element);
-    if (elementHeight >= viewportHeight) {
+    var elementTop = getTop(container, element);
+    if (elementHeight >= viewportHeight) { // when it doesn't fit, scroll its top into top
       return elementTop;
     }
     return elementTop - (viewportHeight - elementHeight - offset) / 2;
@@ -70,9 +79,10 @@
   // if the first argument is numeric then scroll to this location
   // if the callback exist, it is called when the scrolling is finished
   // if context is set then scroll that element, else scroll window
-  return function (el, duration, offset, callback, goToTop) {
+  return function (el, duration, offset, callback, goToTop, container) {
     duration = duration || 500;
-    var start = window.pageYOffset;
+    container = container || window;
+    var start = container === window ? window.pageYOffset : container.scrollTop;
     var end;
     if (typeof el === 'number') {
       end = parseInt(el);
@@ -83,7 +93,7 @@
         el = document.getElementById(id);
         location.hash = hash;
       }
-      end = goToTop ? getTop(el) : getTopWhenCentered(el, offset);
+      end = goToTop ? getTop(container, el) : getTopWhenCentered(container, el, offset);
     }
     end = end - offset;
 
@@ -94,9 +104,18 @@
         window.setTimeout(fn, 15);
       };
 
+    var scrollTo = function (scrollTop) {
+      if (container === window) {
+        container.scroll(0, scrollTop);
+      } else {
+        container.scrollTop = scrollTop;
+      }
+    };
+
     var step = function () {
       var elapsed = Date.now() - clock;
-      window.scroll(0, position(start, end, elapsed, duration));
+      var newScrollTop = position(start, end, elapsed, duration);
+      scrollTo(newScrollTop);
 
       if (elapsed > duration) {
         if (typeof callback === 'function') {
