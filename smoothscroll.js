@@ -47,7 +47,7 @@
     return top;
   };
   var getTopWhenCentered = function (container, element, offset) {
-    var viewportHeight = getViewportHeight();
+    var viewportHeight = getViewportHeight(container);
     var elementHeight = element.clientHeight;
     var elementTop = getTop(container, element);
     if (elementHeight >= viewportHeight) { // when it doesn't fit, scroll its top into top
@@ -81,6 +81,7 @@
   // if context is set then scroll that element, else scroll window
   return function (el, duration, options) {
     duration = typeof duration === 'number' ? duration : 500;
+    options = options || {};
     var offset = options.offset;
     var callback = options.callback;
     var goToTop = options.goToTop;
