@@ -34,6 +34,13 @@
   var getCurrentScrollPosition = function (container) {
     return container === window ? window.pageYOffset : container.scrollTop;
   };
+  var scrollTo = function (container, scrollTop) {
+    if (container === window) {
+      container.scroll(0, scrollTop);
+    } else {
+      container.scrollTop = scrollTop;
+    }
+  };
   // Get the top position of an element in the container
   var getTop = function (container, element) {
     if (container === window) {
@@ -128,18 +135,10 @@
         window.setTimeout(fn, 15);
       };
 
-    var scrollTo = function (scrollTop) {
-      if (container === window) {
-        container.scroll(0, scrollTop);
-      } else {
-        container.scrollTop = scrollTop;
-      }
-    };
-
     var step = function () {
       var elapsed = Date.now() - clock;
       var newScrollTop = position(scrollTopStart, scrollTopTarget, elapsed, duration);
-      scrollTo(newScrollTop);
+      scrollTo(container, newScrollTop);
 
       if (elapsed > duration) {
         if (typeof callback === 'function') {
