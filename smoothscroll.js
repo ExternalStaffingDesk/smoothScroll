@@ -114,6 +114,10 @@
         var hash = el;
         var id = hash.substr(1);
         el = document.getElementById(id);
+        if (!el) {
+          throw new Error('Could not find an element with the id "' + id + '"');
+          return;
+        }
         location.hash = hash;
       }
       scrollTopTarget = goToTop ? getTop(container, el) : getTopWhenCentered(container, el, offset);
