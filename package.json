@@ -1,6 +1,6 @@
 {
   "name": "smoothscroll",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A teeny tiny smooth scroll script with ease-in-out effect and no jQuery.",
   "main": "smoothscroll.js",
   "author": "Original by Alice Lieutier <alice@lieutier.me> (http://alice.lieutier.me), heavily modified by External Staffing Desk B.V.",
